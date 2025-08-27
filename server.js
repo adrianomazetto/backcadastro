@@ -11,9 +11,8 @@ const PORT = process.env.PORT || 3000;
 app.use(cors({
   origin: [
     'http://localhost:8080', 
-    'http://127.0.0.1:8080', 
-    'https://frontcadastro.pages.dev', // Frontend no Cloudflare Pages
-    'https://produtos-api.onrender.com' // Será gerado pelo Render
+    'https://frontcadastro.pages.dev', // Seu frontend
+    'https://backcadastro.onrender.com' // Sua API real (não produtos-api)
   ],
   credentials: true
 }));
