@@ -7,11 +7,12 @@ const productRoutes = require('./routes/products');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+// ✅ CORRIGIDO - incluir Cloudflare Pages:
 app.use(cors({
   origin: [
     'http://localhost:8080',
-    'https://frontcadastro.pages.dev', // Seu frontend
+    'http://127.0.0.1:8080', 
+    'https://frontcadastro.pages.dev',
     'https://backcadastro.onrender.com'
   ],
   credentials: true,
