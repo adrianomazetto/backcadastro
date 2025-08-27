@@ -22,10 +22,28 @@ router.get('/', async (req, res) => {
 // POST - Criar novo produto
 router.post('/', async (req, res) => {
   try {
-    const { nome, preco, categoria, imagem_url, descricao } = req.body;
+    // Log para debug
+    console.log('Dados recebidos:', req.body);
+    
+    // Aceitar ambos formatos (português E inglês)
+    const {
+      nome, preco, categoria, imagem_url, descricao,
+      name, price, category, imageUrl, description
+    } = req.body;
+
+    // Mapear campos com fallback
+    const produtoData = {
+      nome: nome || name,
+      preco: parseFloat(preco || price),
+      categoria: categoria || category,
+      imagem_url: imagem_url || imageUrl,
+      descricao: descricao || description
+    };
+
+    console.log('Dados processados:', produtoData);
 
     // Validação
-    if (!nome || !preco) {
+    if (!produtoData.nome || !produtoData.preco) {
       return res.status(400).json({ 
         error: 'Nome e preço são obrigatórios' 
       });
@@ -33,13 +51,7 @@ router.post('/', async (req, res) => {
 
     const { data, error } = await supabase
       .from('products')
-      .insert([{
-        nome,
-        preco: parseFloat(preco),
-        categoria,
-        imagem_url,
-        descricao
-      }])
+      .insert([produtoData])
       .select()
       .single();
 
@@ -48,7 +60,10 @@ router.post('/', async (req, res) => {
     res.status(201).json(data);
   } catch (error) {
     console.error('Erro ao criar produto:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    res.status(500).json({ 
+      error: 'Erro interno do servidor',
+      details: error.message 
+    });
   }
 });
 
