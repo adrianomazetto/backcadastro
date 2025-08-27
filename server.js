@@ -10,11 +10,13 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors({
   origin: [
-    'http://localhost:8080', 
+    'http://localhost:8080',
     'https://frontcadastro.pages.dev', // Seu frontend
-    'https://backcadastro.onrender.com' // Sua API real (não produtos-api)
+    'https://backcadastro.onrender.com'
   ],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
