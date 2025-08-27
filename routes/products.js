@@ -1,6 +1,142 @@
 const express = require('express');
 const router = express.Router();
-const Product = require('../models/Product');
+const supabase = require('../config/supabase');
+
+// GET - Listar todos os produtos
+router.get('/', async (req, res) => {
+  try {
+    const { data: products, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    res.json(products);
+  } catch (error) {
+    console.error('Erro ao buscar produtos:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// POST - Criar novo produto
+router.post('/', async (req, res) => {
+  try {
+    const { nome, preco, categoria, imagem_url, descricao } = req.body;
+
+    // Validação
+    if (!nome || !preco) {
+      return res.status(400).json({ 
+        error: 'Nome e preço são obrigatórios' 
+      });
+    }
+
+    const { data, error } = await supabase
+      .from('products')
+      .insert([{
+        nome,
+        preco: parseFloat(preco),
+        categoria,
+        imagem_url,
+        descricao
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.status(201).json(data);
+  } catch (error) {
+    console.error('Erro ao criar produto:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// GET - Buscar produto por ID
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return res.status(404).json({ error: 'Produto não encontrado' });
+      }
+      throw error;
+    }
+
+    res.json(data);
+  } catch (error) {
+    console.error('Erro ao buscar produto:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// PUT - Atualizar produto
+router.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nome, preco, categoria, imagem_url, descricao } = req.body;
+
+    const { data, error } = await supabase
+      .from('products')
+      .update({
+        nome,
+        preco: parseFloat(preco),
+        categoria,
+        imagem_url,
+        descricao
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return res.status(404).json({ error: 'Produto não encontrado' });
+      }
+      throw error;
+    }
+
+    res.json(data);
+  } catch (error) {
+    console.error('Erro ao atualizar produto:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// DELETE - Deletar produto
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+
+    res.status(204).send();
+  } catch (error) {
+    console.error('Erro ao deletar produto:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+module.exports = router;
+
+
+
+/*const express = require('express');
+const router = express.Router();
+const supabase = require('../config/supabase');
+//const Product = require('../models/Product');
 
 // Middleware para validar dados do produto
 const validateProduct = (req, res, next) => {
@@ -122,3 +258,4 @@ router.delete('/:id', (req, res) => {
 });
 
 module.exports = router;
+*/

@@ -1,7 +1,7 @@
 {
   "name": "produtos-backend",
   "version": "1.0.0",
-  "description": "API RESTful para cadastro de produtos",
+  "description": "API RESTful para cadastro de produtos com Supabase",
   "main": "server.js",
   "engines": {
     "node": "18.x"
@@ -13,12 +13,10 @@
   "dependencies": {
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "@supabase/supabase-js": "^2.39.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  }
 }
